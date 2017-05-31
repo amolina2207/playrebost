@@ -1,0 +1,339 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  title: ElRebost API
+  description: Product, Customer, Provider and Order CRUD
+  version: "1.0.0"
+  
+################################################################################
+#                  Host, Base Path, Schemes and Content Types                  #
+################################################################################  
+# the domain of the service
+host: domain.pending.com
+basePath: /v1
+# array of all schemes that your API supports
+schemes:
+  # In the future https
+  - http
+# will be prefixed to all paths
+consumes:
+  - application/json
+produces:
+  - application/json
+  
+################################################################################
+#                                   Parameters                                 #
+################################################################################
+parameters:
+
+  product:
+    name: body
+    in: body
+    description: The Product id
+    required: false
+    schema:
+      $ref: '#/definitions/Product'    
+
+  product-array:
+    name: body
+    in: body
+    description: The Product id
+    required: false
+    schema:
+      $ref: '#/definitions/Product'  
+
+  product-id:
+    name: product-id
+    in: path
+    description: The Product id
+    type: number
+    required: true
+  customer-id:
+    name: customer-id
+    in: path
+    description: The Product id
+    type: number
+    required: true
+
+  search:
+    name: search
+    in: query
+    description: Any text to search
+    type: string
+    format: double  
+    required: true
+  sort:
+    name: sort
+    in: query
+    description: field for sorting to
+    type: string  
+    format: double
+  sort_dir:
+    name: sort_dir
+    in: query
+    description: order direction ascendent (1), descendent (-1)
+    type: integer
+  starting:    
+    name: starting
+    in: query
+    description: initial number element for pagination
+    type: integer
+    default: 0
+    minimum: 0
+  limit:    
+    name: limit
+    in: query
+    description: number of products to return
+    type: integer
+    default: 11
+    minimum: 11
+    maximum: 1000
+
+# HTTP Code Reference: http://www.restapitutorial.com/httpstatuscodes.html
+responses:
+    '201':
+      description: Element created
+    '204':
+      description: No Content
+    '404':
+      description: Element not found
+    '400':
+      description: Invalid Request Format
+    'product-array':
+          description: results
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Product' 
+    default:
+      description: Unexpected error
+      schema:
+        $ref: '#/definitions/Error'
+
+################################################################################
+#                                           Paths                              #
+################################################################################
+paths:
+  /products:
+    get:
+      summary: Products Search
+      description: |
+        The Products endpoint returns information about the products
+      tags:
+        - Products        
+      parameters:
+        - $ref: '#/parameters/search'
+        - $ref: '#/parameters/sort'
+        - $ref: '#/parameters/sort_dir'
+        - $ref: '#/parameters/starting'
+        - $ref: '#/parameters/limit'
+      responses:
+        "200":
+          $ref: '#/responses/product-array'
+    post:
+      tags:
+        - Products        
+      parameters:
+        - $ref: '#/parameters/product'
+      responses:
+        "200":
+          description: Make a new
+    put:
+      description: update element
+      tags:
+        - Products   
+      parameters:
+        - $ref: '#/parameters/product'      
+      responses:
+        "405":
+          description: Validation exception
+        "200":
+          description: Updates      
+        
+  /products/{product-id}:
+    get:
+      tags:
+        - Products        
+      parameters:
+       - $ref: '#/parameters/product-id'
+      responses:
+        "200":
+          description: Get by id           
+    delete:
+      tags:
+        - Products        
+      description: mark as deleted a single element
+      operationId: deleteElement
+      parameters:
+        - $ref: '#/parameters/product-id'
+      responses:
+        "204":
+          $ref: '#/responses/204'
+        "404":
+          $ref: '#/responses/404'
+        "400":
+          $ref: '#/responses/400'
+
+  /me:
+    get:
+      summary: User Profile
+      description: The User Profile endpoint returns information about the Uber user that has authorized with the application.
+      tags:
+        - Users
+      responses:
+        "200":
+          description: Profile information for a user
+          schema:
+            $ref: '#/definitions/Profile'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /login:
+    post:
+      summary: open a session
+      parameters: 
+        - username: 
+          name: username
+          in: path
+          type: string
+          required: true
+        - password:
+          type: string
+        - terminal: 
+          type: string
+      responses:
+        "200":
+          description: Session Ok
+          schema:
+              username:
+                type: string
+              name:
+                type: string
+              token:
+                type: string
+            
+################################################################################
+#                                 Definitions                                  #
+################################################################################            
+definitions:
+  Customer:
+    type: object
+    properties:
+      id:
+        type: string
+      status:
+        type: string      
+        description: active, deactive, deleted, ...
+      name:
+        type: string
+      image:
+        type: string
+        description: representative image
+      email:
+        type: string
+      phone:
+        type: string
+      address:
+        type: string
+      city:
+        type: string
+  Provider:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      status:
+        type: string      
+        description: active, deactive, deleted, ...
+      image:
+        type: string
+        description: representative image        
+  Product:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+        description: active, deactive, deleted, ...
+      image:
+        type: string
+        description: representative image
+      provider: 
+        type: string
+        description: id
+  Order:
+    type: object
+    properties:
+      id:
+        type: string
+      customer: 
+        type: string
+        description: id
+      notes:
+        type: string
+        description: notes to the order
+      status:
+        type: string
+        description: active, deactive, deleted, ...
+      lines:        
+        type: array
+        items:
+          $ref: '#/definitions/OrderLine'
+  OrderLine:
+    type: object
+    properties:
+      id:
+        type: string
+      order:
+        type: string
+      provider: 
+        type: string
+        description: provider id
+      name:
+        type: string
+      status:
+        description: active, deactive, deleted, ...
+        type: string
+      image:
+        type: string
+        description: Image URL representing the product.
+  Profile:
+    type: object
+    properties:
+      first_name:
+        type: string
+        description: First name of the Uber user.
+      last_name:
+        type: string
+        description: Last name of the Uber user.
+      email:
+        type: string
+        description: Email address of the Uber user
+      picture:
+        type: string
+        description: Image URL of the Uber user.
+      promo_code:
+        type: string
+        description: Promo code of the Uber user.
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string

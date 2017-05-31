@@ -1,0 +1,43 @@
+GET        	/                       controllers.Assets.at(path="/public/app", file="app/index.html")
+GET        	/assets/*file           controllers.Assets.at(path="/public/app", file)
+
+OPTIONS    	/          				controllers.ProductsController.options(path: String ?= "")
+OPTIONS    	/*path     				controllers.ProductsController.options(path)
+
+GET        	/products		        controllers.ProductsController.find
+GET 	   	/products/:id 			controllers.ProductsController.read(id: String)
+POST	   	/products 				controllers.ProductsController.create
+PUT	   		/products				controllers.ProductsController.update
+DELETE	   	/products/:id 			controllers.ProductsController.delete(id: String)
+
+GET 	   	/users/:id 				controllers.UsersController.read(id: String)
+POST	   	/users 					controllers.UsersController.create
+PUT	   		/users					controllers.UsersController.update
+DELETE	   	/users/:id 				controllers.UsersController.delete(id: String)
+POST	   	/users/authenticate		controllers.UsersController.authenticate
+POST		/users/logout   		controllers.UsersController.logout
+
+GET         /providers/:id/products		controllers.ProvidersController.findProductsByProvider(id: String)
+GET 	   	/providers/:id 				controllers.ProvidersController.read(id: String)
+POST	   	/providers 					controllers.ProvidersController.create
+PUT	   		/providers					controllers.ProvidersController.update
+DELETE	   	/providers/:id 				controllers.ProvidersController.delete(id: String)
+
+GET 	   	/categories/:id 		controllers.CategoriesController.read(id: String)
+POST	   	/categories 			controllers.CategoriesController.create
+PUT	   		/categories				controllers.CategoriesController.update
+DELETE	   	/categories/:id 		controllers.CategoriesController.delete(id: String)
+
+GET         /tags		        	controllers.TagsController.find
+GET         /tags/parent/:id       	controllers.TagsController.findByParent(id: String)
+GET         /tags/:id/childs        controllers.TagsController.childs(id: String)
+GET 	   	/tags/:id 				controllers.TagsController.read(id: String)
+POST	   	/tags 					controllers.TagsController.create
+PUT	   		/tags					controllers.TagsController.update
+DELETE	   	/tags/:id 				controllers.TagsController.delete(id: String)
+
+GET         /orders		        	controllers.OrdersController.find
+GET 	   	/orders/:id 			controllers.OrdersController.read(id: String)
+POST	   	/orders 				controllers.OrdersController.create
+PUT	   		/orders					controllers.OrdersController.update
+DELETE	   	/orders/:id 			controllers.OrdersController.delete(id: String)
